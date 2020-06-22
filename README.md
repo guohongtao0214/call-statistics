@@ -1,7 +1,7 @@
 
 ## Quick Start
 
-1.首先使用 maven clean install -Dmaven.test.skip=true 将本工程安装到本地maven仓库
+1.首先使用 mvn clean install -Dmaven.test.skip=true 将本工程安装到本地maven仓库
 
 2.在你的web项目中，引入pom依赖
 ```
