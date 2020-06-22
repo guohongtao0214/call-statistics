@@ -86,4 +86,12 @@ call.statistics.mongo.active=true
 call.statistics.mongo.uri= mongodb://username:password@localhost:27017/database
 
 ```
-没有开启认证的话，可以去除username和password
+没有开启认证的话，可以去除username和password  
+
+5.开启统计功能
+根据选取的储存方式的不同，可以选择不同的注解  
+@CallStatistics(value = StorageType.MYSQL)和@CallStatistics(value = StorageType.MONGO)，一般在controller的方法上面。  
+使用MySQL的方式，需要初始化数据库，表结构就是call.sql。 
+
+5.自定义统计字段  
+如果觉得使用过程的字段不能满足要求，可以自定义想用的统计字段。请读者自行阅读源码进行修改。
