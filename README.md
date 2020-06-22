@@ -93,5 +93,5 @@ call.statistics.mongo.uri= mongodb://username:password@localhost:27017/database
 @CallStatistics(value = StorageType.MYSQL)和@CallStatistics(value = StorageType.MONGO)，一般在controller的方法上面。  
 使用MySQL的方式，需要初始化数据库，表结构就是call.sql。 
 
-5.自定义统计字段  
+6.自定义统计字段  
 如果觉得使用过程的字段不能满足要求，可以自定义想用的统计字段。请读者自行阅读源码进行修改。
