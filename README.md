@@ -38,8 +38,8 @@ call.statistics.mysql.pool-name=DataSourceHikariCP
 call.statistics.mysql.max-lifetime=1800000
 call.statistics.mysql.connection-test-query=SELECT 1
 ```
-在配置出出现了一系列问题，需要主要多数据源的问题，笔者演示的的JDBCTempalte的注入方式，MyBatis的方式类似，往SqlSessionFactory注入
-相应的数据源即可。
+在配置的时候出现了一系列问题，主要是多数据源的问题，笔者演示的的JDBCTempalte的注入方式，MyBatis的方式类似，往SqlSessionFactory注入
+相应的数据源即可，必须设置@Primary数据库（如果用到了数据库）。
 ```
 @Configuration
 public class DataSourceConf {
@@ -89,9 +89,9 @@ call.statistics.mongo.uri= mongodb://username:password@localhost:27017/database
 没有开启认证的话，可以去除username和password  
 
 5.开启统计功能
-根据选取的储存方式的不同，可以选择不同的注解  
+根据选取的储存方式的不同，选择不同的注解  
 @CallStatistics(value = StorageType.MYSQL)和@CallStatistics(value = StorageType.MONGO)，一般在controller的方法上面。  
-使用MySQL的方式，需要初始化数据库，表结构就是call.sql。 
+使用MySQL的方式，需要初始化数据库，call.sql工程中已经提供。 
 
 6.自定义统计字段  
 如果觉得使用过程的字段不能满足要求，可以自定义想用的统计字段。请读者自行阅读源码进行修改。
