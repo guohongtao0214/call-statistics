@@ -38,7 +38,7 @@ call.statistics.mysql.pool-name=DataSourceHikariCP
 call.statistics.mysql.max-lifetime=1800000
 call.statistics.mysql.connection-test-query=SELECT 1
 ```
-在配置出出现了一系列问题，需要主要多数据源的问题，笔者演示的的JDBCTempalte的注入方式，MyBatis的方式类似，往SqlSessionFactory注入、
+在配置出出现了一系列问题，需要主要多数据源的问题，笔者演示的的JDBCTempalte的注入方式，MyBatis的方式类似，往SqlSessionFactory注入
 相应的数据源即可。
 ```
 @Configuration
