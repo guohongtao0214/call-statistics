@@ -1,6 +1,6 @@
 ## Introduction
 由于项目中存在接口调用次数统计的功能，所以想做一个spring boot starter的jar包，通过注解的方式，无侵入式统计接口的调用次数。  
-基于Spring Boot 2.2.5.RELEASE 开发的。  
+基于Spring Boot 2.2.5.RELEASE 开发。
 存储的方式有两种：
 - MySQL(默认方式)
 - MongoDB  
