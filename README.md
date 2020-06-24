@@ -97,21 +97,21 @@ call.statistics.mongo.uri= mongodb://username:password@localhost:27017/database
 请求头中里面加入了自定义appID字段，如果想要统计不同的字段可以自行添加，源码(CallAspect)如下：
 ```
 try {
-            HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-            String url = request.getRequestURI();
-            // 可以在这里添加用到的字段，并修改相应的持久化方式
-            String appid = request.getHeader("appID");
-            String method = request.getMethod();
-            String params = null;
-            if ("GET".equals(method)) {
-                Map<String, String[]> parameterMap = request.getParameterMap();
-                params = objectMapper.writeValueAsString(parameterMap);
-            } else {
-                int len = request.getContentLength();
-                ServletInputStream inputStream = request.getInputStream();
-                byte[] buffer = new byte[len];
-                inputStream.read(buffer, 0, len);
-                params = new String(buffer);
-            }
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        String url = request.getRequestURI();
+        // 可以在这里添加用到的字段，并修改相应的持久化方式
+        String appid = request.getHeader("appID");
+        String method = request.getMethod();
+        String params = null;
+        if ("GET".equals(method)) {
+            Map<String, String[]> parameterMap = request.getParameterMap();
+            params = objectMapper.writeValueAsString(parameterMap);
+        } else {
+            int len = request.getContentLength();
+            ServletInputStream inputStream = request.getInputStream();
+            byte[] buffer = new byte[len];
+            inputStream.read(buffer, 0, len);
+            params = new String(buffer);
+   }
 ```
 如果觉得使用过程的字段不能满足要求，可以自定义想用的统计字段。请读者自行阅读源码进行修改。
