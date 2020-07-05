@@ -18,7 +18,7 @@ MySQL的持久化方式用的Spring Data JPA，MongoDB的持久化方式用的Mo
 <dependency>
     <groupId>org.kaws</groupId>
     <artifactId>call-statistics-boot-starter</artifactId>
-    <version>0.0.1</version>
+    <version>1.0.0</version>
 </dependency>
 ```
 
