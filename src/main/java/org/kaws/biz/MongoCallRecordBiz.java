@@ -5,9 +5,7 @@ import org.kaws.entity.MongoCallRecord;
 import org.kaws.entity.MongoCallSuccessRecord;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.util.List;
 
 /**
  * @Author: Heiky
@@ -16,19 +14,15 @@ import java.time.ZoneId;
  */
 
 @Setter
-public class MongoCallRecordBiz implements CallRecordBiz {
+public class MongoCallRecordBiz {
 
     private MongoTemplate mongoTemplate;
 
-    @Override
-    public void saveCallRecord(String appId, String abilityUri) {
-        MongoCallRecord mongoCallRecord = new MongoCallRecord(appId, abilityUri, LocalDateTime.ofInstant(Instant.now(), ZoneId.of("Asia/Shanghai")));
-        mongoTemplate.save(mongoCallRecord);
+    public void saveCallRecords(List<MongoCallRecord> mongoCallRecords) {
+        mongoTemplate.insertAll(mongoCallRecords);
     }
 
-    @Override
-    public void saveCallSuccessRecord(String appId, String abilityUri, String params) {
-        MongoCallSuccessRecord mongoCallSuccessRecord = new MongoCallSuccessRecord(appId, abilityUri, params, LocalDateTime.ofInstant(Instant.now(), ZoneId.of("Asia/Shanghai")));
-        mongoTemplate.save(mongoCallSuccessRecord);
+    public void saveCallSuccessRecords(List<MongoCallSuccessRecord> mongoCallSuccessRecords) {
+        mongoTemplate.insertAll(mongoCallSuccessRecords);
     }
 }

@@ -1,7 +1,11 @@
 package org.kaws.autoconfigure;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @Author: Heiky
@@ -10,6 +14,12 @@ import org.springframework.context.annotation.Import;
  */
 
 @Configuration
-@Import({MySQLCallStatisticsAutoConfiguration.class, MongoCallStatisticsAutoConfiguration.class})
+@Import({MySQLCallStatisticsAutoConfiguration.class, MongoCallStatisticsAutoConfiguration.class, ThreadPoolAutoConfiguration.class})
 public class CallStatisticsAutoConfiguration {
+
+    @Bean
+    public Lock lock() {
+        return new ReentrantLock();
+    }
+
 }

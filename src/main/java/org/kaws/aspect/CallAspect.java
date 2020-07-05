@@ -9,13 +9,12 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.kaws.annotation.CallStatistics;
 import org.kaws.annotation.StorageType;
-import org.kaws.autoconfigure.CallStatisticsAutoConfiguration;
-import org.kaws.biz.CallRecordBiz;
-import org.kaws.biz.MongoCallRecordBiz;
-import org.kaws.biz.MySQLCallRecordBiz;
+import org.kaws.entity.MongoCallRecord;
+import org.kaws.entity.MongoCallSuccessRecord;
+import org.kaws.entity.MySQLCallRecord;
+import org.kaws.entity.MySQLCallSuccessRecord;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
@@ -24,7 +23,11 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.Lock;
 
 
 /**
@@ -44,7 +47,8 @@ public class CallAspect implements ApplicationContextAware {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private CallRecordBiz callRecordBiz;
+    @Autowired
+    private Lock lock;
 
     @Pointcut("@annotation(org.kaws.annotation.CallStatistics)")
     public void operationTarget() {
@@ -56,12 +60,6 @@ public class CallAspect implements ApplicationContextAware {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         CallStatistics annotation = signature.getMethod().getAnnotation(CallStatistics.class);
         StorageType storageType = annotation.value();
-
-        if (StorageType.MYSQL.equals(storageType)) {
-            callRecordBiz = applicationContext.getBean(MySQLCallRecordBiz.class);
-        } else if (StorageType.MONGO.equals(storageType)) {
-            callRecordBiz = applicationContext.getBean(MongoCallRecordBiz.class);
-        }
 
         Object res = null;
         try {
@@ -81,12 +79,32 @@ public class CallAspect implements ApplicationContextAware {
                 params = new String(buffer);
             }
             url = method + " " + url;
-            // 将用户标识、请求方式:请求地址、请求时间存入调用记录表中
-            callRecordBiz.saveCallRecord(appid, url);
+            // 将用户标识、请求方式 请求地址、请求时间存入调用记录的集合
+            lock.lock();
+            if (StorageType.MYSQL.equals(storageType)) {
+                List<MySQLCallRecord> mySQLCallRecords =
+                        (List<MySQLCallRecord>) applicationContext.getBean("mySQLCallRecords");
+                mySQLCallRecords.add(new MySQLCallRecord(appid, url, LocalDateTime.now(ZoneId.of("Asia/Shanghai"))));
+            } else if (StorageType.MONGO.equals(storageType)) {
+                List<MongoCallRecord> mongoCallRecords =
+                        (List<MongoCallRecord>) applicationContext.getBean("mongoCallRecords");
+                mongoCallRecords.add(new MongoCallRecord(appid, url, LocalDateTime.now(ZoneId.of("Asia/Shanghai"))));
+            }
+            lock.unlock();
             // 调用真正的接口
             res = joinPoint.proceed();
-            // 将用户标识、请求方式:请求地址、请求参数、请求时间存入调用成功记录表中
-            callRecordBiz.saveCallSuccessRecord(appid, url, params);
+            // 将用户标识、请求方式 请求地址、请求参数、请求时间存入调用成功记录的集合
+            lock.lock();
+            if (StorageType.MYSQL.equals(storageType)) {
+                List<MySQLCallSuccessRecord> mySQLCallSuccessRecords =
+                        (List<MySQLCallSuccessRecord>) applicationContext.getBean("mySQLCallSuccessRecords");
+                mySQLCallSuccessRecords.add(new MySQLCallSuccessRecord(appid, url, params, LocalDateTime.now(ZoneId.of("Asia/Shanghai"))));
+            } else if (StorageType.MONGO.equals(storageType)) {
+                List<MongoCallSuccessRecord> mongoCallSuccessRecords =
+                        (List<MongoCallSuccessRecord>) applicationContext.getBean("mongoCallSuccessRecords");
+                mongoCallSuccessRecords.add(new MongoCallSuccessRecord(appid, url, params, LocalDateTime.now(ZoneId.of("Asia/Shanghai"))));
+            }
+            lock.unlock();
             return res;
         } catch (Exception e) {
             log.error("统计方法执行异常", e);

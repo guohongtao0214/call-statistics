@@ -1,8 +1,7 @@
 package org.kaws.entity;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -13,9 +12,8 @@ import java.time.LocalDateTime;
  * @author Heiky
  * @since 2020-06-08
  */
-@Data
-@EqualsAndHashCode(callSuper = false)
-@Accessors(chain = true)
+@Getter
+@Setter
 @Entity(name = "call_success_record")
 public class MySQLCallSuccessRecord implements Serializable {
 
@@ -52,5 +50,13 @@ public class MySQLCallSuccessRecord implements Serializable {
     @Column(nullable = false)
     private LocalDateTime createTime;
 
+    public MySQLCallSuccessRecord() {
+    }
 
+    public MySQLCallSuccessRecord(String appId, String abilityUri, String params, LocalDateTime createTime) {
+        this.appId = appId;
+        this.abilityUri = abilityUri;
+        this.params = params;
+        this.createTime = createTime;
+    }
 }
