@@ -13,6 +13,7 @@ import org.kaws.entity.MongoCallRecord;
 import org.kaws.entity.MongoCallSuccessRecord;
 import org.kaws.entity.MySQLCallRecord;
 import org.kaws.entity.MySQLCallSuccessRecord;
+import org.kaws.util.IPUtil;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -79,6 +80,8 @@ public class CallAspect implements ApplicationContextAware {
                 params = new String(buffer);
             }
             url = method + " " + url;
+            // 获取调用的ip
+            String ipAddr = IPUtil.getIpAddr(request);
             // 将用户标识、请求方式 请求地址、请求时间存入调用记录的集合
             lock.lock();
             if (StorageType.MYSQL.equals(storageType)) {
