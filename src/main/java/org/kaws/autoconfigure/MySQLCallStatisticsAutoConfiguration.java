@@ -10,6 +10,7 @@ import org.kaws.entity.MySQLCallRecord;
 import org.kaws.entity.MySQLCallSuccessRecord;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
@@ -58,12 +59,12 @@ public class MySQLCallStatisticsAutoConfiguration implements ApplicationContextA
     }
 
 
-    @Bean("mySQLCallRecords")
+    @Bean
     public List<MySQLCallRecord> mySQLCallRecords() {
         return new ArrayList<>();
     }
 
-    @Bean("mySQLCallSuccessRecords")
+    @Bean
     public List<MySQLCallSuccessRecord> mySQLCallSuccessRecords() {
         return new ArrayList<>();
     }
