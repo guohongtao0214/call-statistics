@@ -78,25 +78,22 @@ public class MySQLCallStatisticsAutoConfiguration implements ApplicationContextA
 
         ScheduledThreadPoolExecutor scheduledThreadPoolExecutor = (ScheduledThreadPoolExecutor) applicationContext.getBean("customScheduledThreadPool");
 
-        scheduledThreadPoolExecutor.scheduleAtFixedRate(new Runnable() {
-            @Override
-            public void run() {
-                if (!CollectionUtils.isEmpty(mySQLCallRecords)) {
-                    MySQLCallRecordBiz mySQLCallRecordBiz = applicationContext.getBean(MySQLCallRecordBiz.class);
-                    lock.lock();
-                    ArrayList<MySQLCallRecord> savingCallRecords = Lists.newArrayList(mySQLCallRecords);
-                    mySQLCallRecords.clear();
-                    lock.unlock();
-                    mySQLCallRecordBiz.saveCallRecords(savingCallRecords);
-                }
-                if (!CollectionUtils.isEmpty(mySQLCallSuccessRecords)) {
-                    MySQLCallRecordBiz mySQLCallRecordBiz = applicationContext.getBean(MySQLCallRecordBiz.class);
-                    lock.lock();
-                    ArrayList<MySQLCallSuccessRecord> savingCallRecords = Lists.newArrayList(mySQLCallSuccessRecords);
-                    mySQLCallSuccessRecords.clear();
-                    lock.unlock();
-                    mySQLCallRecordBiz.saveCallSuccessRecords(savingCallRecords);
-                }
+        scheduledThreadPoolExecutor.scheduleAtFixedRate(() -> {
+            if (!CollectionUtils.isEmpty(mySQLCallRecords)) {
+                MySQLCallRecordBiz mySQLCallRecordBiz = applicationContext.getBean(MySQLCallRecordBiz.class);
+                lock.lock();
+                ArrayList<MySQLCallRecord> savingCallRecords = Lists.newArrayList(mySQLCallRecords);
+                mySQLCallRecords.clear();
+                lock.unlock();
+                mySQLCallRecordBiz.saveCallRecords(savingCallRecords);
+            }
+            if (!CollectionUtils.isEmpty(mySQLCallSuccessRecords)) {
+                MySQLCallRecordBiz mySQLCallRecordBiz = applicationContext.getBean(MySQLCallRecordBiz.class);
+                lock.lock();
+                ArrayList<MySQLCallSuccessRecord> savingCallRecords = Lists.newArrayList(mySQLCallSuccessRecords);
+                mySQLCallSuccessRecords.clear();
+                lock.unlock();
+                mySQLCallRecordBiz.saveCallSuccessRecords(savingCallRecords);
             }
         }, 60, 10, TimeUnit.SECONDS);
 

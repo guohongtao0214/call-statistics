@@ -98,25 +98,22 @@ public class MongoCallStatisticsAutoConfiguration implements ApplicationContextA
 
         ScheduledThreadPoolExecutor scheduledThreadPoolExecutor = (ScheduledThreadPoolExecutor) applicationContext.getBean("customScheduledThreadPool");
 
-        scheduledThreadPoolExecutor.scheduleAtFixedRate(new Runnable() {
-            @Override
-            public void run() {
-                if (!CollectionUtils.isEmpty(mongoCallRecords)) {
-                    MongoCallRecordBiz mongoCallRecordBiz = applicationContext.getBean(MongoCallRecordBiz.class);
-                    lock.lock();
-                    ArrayList<MongoCallRecord> savingCallRecords = Lists.newArrayList(mongoCallRecords);
-                    mongoCallRecords.clear();
-                    lock.unlock();
-                    mongoCallRecordBiz.saveCallRecords(savingCallRecords);
-                }
-                if (!CollectionUtils.isEmpty(mongoCallSuccessRecords)) {
-                    MongoCallRecordBiz mongoCallRecordBiz = applicationContext.getBean(MongoCallRecordBiz.class);
-                    lock.lock();
-                    ArrayList<MongoCallSuccessRecord> savingCallRecords = Lists.newArrayList(mongoCallSuccessRecords);
-                    mongoCallSuccessRecords.clear();
-                    lock.unlock();
-                    mongoCallRecordBiz.saveCallSuccessRecords(savingCallRecords);
-                }
+        scheduledThreadPoolExecutor.scheduleAtFixedRate(() -> {
+            if (!CollectionUtils.isEmpty(mongoCallRecords)) {
+                MongoCallRecordBiz mongoCallRecordBiz = applicationContext.getBean(MongoCallRecordBiz.class);
+                lock.lock();
+                ArrayList<MongoCallRecord> savingCallRecords = Lists.newArrayList(mongoCallRecords);
+                mongoCallRecords.clear();
+                lock.unlock();
+                mongoCallRecordBiz.saveCallRecords(savingCallRecords);
+            }
+            if (!CollectionUtils.isEmpty(mongoCallSuccessRecords)) {
+                MongoCallRecordBiz mongoCallRecordBiz = applicationContext.getBean(MongoCallRecordBiz.class);
+                lock.lock();
+                ArrayList<MongoCallSuccessRecord> savingCallRecords = Lists.newArrayList(mongoCallSuccessRecords);
+                mongoCallSuccessRecords.clear();
+                lock.unlock();
+                mongoCallRecordBiz.saveCallSuccessRecords(savingCallRecords);
             }
         }, 60, 10, TimeUnit.SECONDS);
 
