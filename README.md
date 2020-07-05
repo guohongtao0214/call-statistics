@@ -113,6 +113,10 @@ try {
             byte[] buffer = new byte[len];
             inputStream.read(buffer, 0, len);
             params = new String(buffer);
-   }
+       }
+        url = method + " " + url;
+        // 获取调用的ip
+        String ipAddr = IPUtil.getIpAddr(request);
+    }
 ```
 如果觉得使用过程的字段不能满足要求，可以自定义想用的统计字段。请读者自行阅读源码进行修改。
