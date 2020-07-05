@@ -5,7 +5,8 @@
 - MySQL(默认方式)
 - MongoDB  
 
-MySQL的持久化方式用的Spring Data JPA，MongoDB的持久化方式用的MongoTemplate 
+MySQL的持久化方式用的Spring Data JPA，MongoDB的持久化方式用的MongoTemplate。  
+使用了ScheduledThreadPoolExecutor固定周期的刷新List(采用异步添加的方式，先把记录数添加到list)，每隔一段时间刷新到MySQL或者MongoDB。
 
 
 ## Quick Start
