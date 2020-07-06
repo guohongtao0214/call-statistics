@@ -3,7 +3,6 @@ package org.kaws.config;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 /**
  * @Author: Heiky
@@ -13,7 +12,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 
 @Setter
 @Getter
-@EnableConfigurationProperties(MongoConfigurationProperties.class)
 @ConfigurationProperties(prefix = "call.statistics.mongo")
 public class MongoConfigurationProperties {
 

@@ -1,6 +1,8 @@
 package org.kaws.autoconfigure;
 
+import org.kaws.config.ScheduledThreadPoolExecutorProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -13,12 +15,13 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
  */
 
 @Configuration
-public class ThreadPoolAutoConfiguration  {
+@EnableConfigurationProperties(ScheduledThreadPoolExecutorProperties.class)
+public class ThreadPoolAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public ScheduledThreadPoolExecutor customScheduledThreadPool() {
-        return new ScheduledThreadPoolExecutor(Runtime.getRuntime().availableProcessors());
+    public ScheduledThreadPoolExecutor customScheduledThreadPool(ScheduledThreadPoolExecutorProperties scheduledThreadPoolExecutorProperties) {
+        return new ScheduledThreadPoolExecutor(scheduledThreadPoolExecutorProperties.getCorePoolSize());
     }
 
 }
