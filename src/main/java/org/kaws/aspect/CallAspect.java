@@ -84,30 +84,38 @@ public class CallAspect implements ApplicationContextAware {
             String ipAddr = IPUtil.getIpAddr(request);
             // 将用户标识、请求方式 请求地址、请求时间存入调用记录的集合
             lock.lock();
-            if (StorageType.MYSQL.equals(storageType)) {
-                List<MySQLCallRecord> mySQLCallRecords =
-                        (List<MySQLCallRecord>) applicationContext.getBean("mySQLCallRecords");
-                mySQLCallRecords.add(new MySQLCallRecord(appid, url, LocalDateTime.now(ZoneId.of("Asia/Shanghai"))));
-            } else if (StorageType.MONGO.equals(storageType)) {
-                List<MongoCallRecord> mongoCallRecords =
-                        (List<MongoCallRecord>) applicationContext.getBean("mongoCallRecords");
-                mongoCallRecords.add(new MongoCallRecord(appid, url, LocalDateTime.now(ZoneId.of("Asia/Shanghai"))));
+            try {
+                if (StorageType.MYSQL.equals(storageType)) {
+                    List<MySQLCallRecord> mySQLCallRecords =
+                            (List<MySQLCallRecord>) applicationContext.getBean("mySQLCallRecords");
+                    mySQLCallRecords.add(new MySQLCallRecord(appid, url, LocalDateTime.now(ZoneId.of("Asia/Shanghai"))));
+                } else if (StorageType.MONGO.equals(storageType)) {
+                    List<MongoCallRecord> mongoCallRecords =
+                            (List<MongoCallRecord>) applicationContext.getBean("mongoCallRecords");
+                    mongoCallRecords.add(new MongoCallRecord(appid, url, LocalDateTime.now(ZoneId.of("Asia/Shanghai"))));
+                }
+            } finally {
+                lock.unlock();
             }
-            lock.unlock();
+
             // 调用真正的接口
             res = joinPoint.proceed();
             // 将用户标识、请求方式 请求地址、请求参数、请求时间存入调用成功记录的集合
             lock.lock();
-            if (StorageType.MYSQL.equals(storageType)) {
-                List<MySQLCallSuccessRecord> mySQLCallSuccessRecords =
-                        (List<MySQLCallSuccessRecord>) applicationContext.getBean("mySQLCallSuccessRecords");
-                mySQLCallSuccessRecords.add(new MySQLCallSuccessRecord(appid, url, params, LocalDateTime.now(ZoneId.of("Asia/Shanghai"))));
-            } else if (StorageType.MONGO.equals(storageType)) {
-                List<MongoCallSuccessRecord> mongoCallSuccessRecords =
-                        (List<MongoCallSuccessRecord>) applicationContext.getBean("mongoCallSuccessRecords");
-                mongoCallSuccessRecords.add(new MongoCallSuccessRecord(appid, url, params, LocalDateTime.now(ZoneId.of("Asia/Shanghai"))));
+            try {
+                if (StorageType.MYSQL.equals(storageType)) {
+                    List<MySQLCallSuccessRecord> mySQLCallSuccessRecords =
+                            (List<MySQLCallSuccessRecord>) applicationContext.getBean("mySQLCallSuccessRecords");
+                    mySQLCallSuccessRecords.add(new MySQLCallSuccessRecord(appid, url, params, LocalDateTime.now(ZoneId.of("Asia/Shanghai"))));
+                } else if (StorageType.MONGO.equals(storageType)) {
+                    List<MongoCallSuccessRecord> mongoCallSuccessRecords =
+                            (List<MongoCallSuccessRecord>) applicationContext.getBean("mongoCallSuccessRecords");
+                    mongoCallSuccessRecords.add(new MongoCallSuccessRecord(appid, url, params, LocalDateTime.now(ZoneId.of("Asia/Shanghai"))));
+                }
+            } finally {
+                lock.unlock();
             }
-            lock.unlock();
+
             return res;
         } catch (Exception e) {
             log.error("统计方法执行异常", e);

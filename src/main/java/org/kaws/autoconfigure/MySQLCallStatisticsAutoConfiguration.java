@@ -81,18 +81,28 @@ public class MySQLCallStatisticsAutoConfiguration implements ApplicationContextA
         scheduledThreadPoolExecutor.scheduleAtFixedRate(() -> {
             if (!CollectionUtils.isEmpty(mySQLCallRecords)) {
                 MySQLCallRecordBiz mySQLCallRecordBiz = applicationContext.getBean(MySQLCallRecordBiz.class);
+                ArrayList<MySQLCallRecord> savingCallRecords;
                 lock.lock();
-                ArrayList<MySQLCallRecord> savingCallRecords = Lists.newArrayList(mySQLCallRecords);
-                mySQLCallRecords.clear();
-                lock.unlock();
+                try {
+                    savingCallRecords = Lists.newArrayList(mySQLCallRecords);
+                    mySQLCallRecords.clear();
+                } finally {
+                    lock.unlock();
+                }
+
                 mySQLCallRecordBiz.saveCallRecords(savingCallRecords);
             }
             if (!CollectionUtils.isEmpty(mySQLCallSuccessRecords)) {
                 MySQLCallRecordBiz mySQLCallRecordBiz = applicationContext.getBean(MySQLCallRecordBiz.class);
+                ArrayList<MySQLCallSuccessRecord> savingCallRecords;
                 lock.lock();
-                ArrayList<MySQLCallSuccessRecord> savingCallRecords = Lists.newArrayList(mySQLCallSuccessRecords);
-                mySQLCallSuccessRecords.clear();
-                lock.unlock();
+                try {
+                    savingCallRecords = Lists.newArrayList(mySQLCallSuccessRecords);
+                    mySQLCallSuccessRecords.clear();
+                } finally {
+                    lock.unlock();
+                }
+
                 mySQLCallRecordBiz.saveCallSuccessRecords(savingCallRecords);
             }
         }, 60, 10, TimeUnit.SECONDS);

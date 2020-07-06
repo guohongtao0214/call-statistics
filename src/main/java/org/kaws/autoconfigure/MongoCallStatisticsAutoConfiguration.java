@@ -101,18 +101,29 @@ public class MongoCallStatisticsAutoConfiguration implements ApplicationContextA
         scheduledThreadPoolExecutor.scheduleAtFixedRate(() -> {
             if (!CollectionUtils.isEmpty(mongoCallRecords)) {
                 MongoCallRecordBiz mongoCallRecordBiz = applicationContext.getBean(MongoCallRecordBiz.class);
+
+                ArrayList<MongoCallRecord> savingCallRecords;
                 lock.lock();
-                ArrayList<MongoCallRecord> savingCallRecords = Lists.newArrayList(mongoCallRecords);
-                mongoCallRecords.clear();
-                lock.unlock();
+                try {
+                    savingCallRecords = Lists.newArrayList(mongoCallRecords);
+                    mongoCallRecords.clear();
+                } finally {
+                    lock.unlock();
+                }
+
                 mongoCallRecordBiz.saveCallRecords(savingCallRecords);
             }
             if (!CollectionUtils.isEmpty(mongoCallSuccessRecords)) {
                 MongoCallRecordBiz mongoCallRecordBiz = applicationContext.getBean(MongoCallRecordBiz.class);
+                ArrayList<MongoCallSuccessRecord> savingCallRecords;
                 lock.lock();
-                ArrayList<MongoCallSuccessRecord> savingCallRecords = Lists.newArrayList(mongoCallSuccessRecords);
-                mongoCallSuccessRecords.clear();
-                lock.unlock();
+                try {
+                    savingCallRecords = Lists.newArrayList(mongoCallSuccessRecords);
+                    mongoCallSuccessRecords.clear();
+                } finally {
+                    lock.unlock();
+                }
+
                 mongoCallRecordBiz.saveCallSuccessRecords(savingCallRecords);
             }
         }, 60, 10, TimeUnit.SECONDS);
