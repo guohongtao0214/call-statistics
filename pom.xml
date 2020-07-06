@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>org.kaws</groupId>
-	<artifactId>call-statistics-boot-starter</artifactId>
+	<artifactId>call-statistics-spring-boot-starter</artifactId>
 	<version>1.0.0</version>
 	<name>call-statistics</name>
 	<description>调用次数统计</description>
