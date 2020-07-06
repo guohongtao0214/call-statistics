@@ -22,6 +22,11 @@ public class MongoCallSuccessRecord {
     private String appId;
 
     /**
+     * 访问ip
+     */
+    private String accessIp;
+
+    /**
      * 调用地址
      */
     private String abilityUri;
@@ -39,8 +44,9 @@ public class MongoCallSuccessRecord {
     public MongoCallSuccessRecord() {
     }
 
-    public MongoCallSuccessRecord(String appId, String abilityUri, String params, LocalDateTime createTime) {
+    public MongoCallSuccessRecord(String appId, String accessIp, String abilityUri, String params, LocalDateTime createTime) {
         this.appId = appId;
+        this.accessIp = accessIp;
         this.abilityUri = abilityUri;
         this.params = params;
         this.createTime = createTime;

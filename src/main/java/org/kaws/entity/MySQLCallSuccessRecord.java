@@ -8,7 +8,6 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- *
  * @author Heiky
  * @since 2020-06-08
  */
@@ -33,6 +32,13 @@ public class MySQLCallSuccessRecord implements Serializable {
     private String appId;
 
     /**
+     * 访问ip
+     */
+    @Column(nullable = false)
+    private String accessIp;
+
+
+    /**
      * 调用地址
      */
     @Column(nullable = false)
@@ -53,8 +59,9 @@ public class MySQLCallSuccessRecord implements Serializable {
     public MySQLCallSuccessRecord() {
     }
 
-    public MySQLCallSuccessRecord(String appId, String abilityUri, String params, LocalDateTime createTime) {
+    public MySQLCallSuccessRecord(String appId, String accessIp, String abilityUri, String params, LocalDateTime createTime) {
         this.appId = appId;
+        this.accessIp = accessIp;
         this.abilityUri = abilityUri;
         this.params = params;
         this.createTime = createTime;

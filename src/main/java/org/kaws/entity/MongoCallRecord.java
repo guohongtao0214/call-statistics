@@ -21,6 +21,11 @@ public class MongoCallRecord {
     private String appId;
 
     /**
+     * 访问ip
+     */
+    private String accessIp;
+
+    /**
      * 调用地址
      */
     private String abilityUri;
@@ -33,8 +38,9 @@ public class MongoCallRecord {
     public MongoCallRecord() {
     }
 
-    public MongoCallRecord(String appId, String abilityUri, LocalDateTime createTime) {
+    public MongoCallRecord(String appId, String accessIp, String abilityUri, LocalDateTime createTime) {
         this.appId = appId;
+        this.accessIp = accessIp;
         this.abilityUri = abilityUri;
         this.createTime = createTime;
     }

@@ -32,6 +32,12 @@ public class MySQLCallRecord implements Serializable {
     private String appId;
 
     /**
+     * 访问ip
+     */
+    @Column(nullable = false)
+    private String accessIp;
+
+    /**
      * 调用地址
      */
     @Column(nullable = false)
@@ -46,8 +52,9 @@ public class MySQLCallRecord implements Serializable {
     public MySQLCallRecord() {
     }
 
-    public MySQLCallRecord(String appId, String abilityUri, LocalDateTime createTime) {
+    public MySQLCallRecord(String appId, String accessIp, String abilityUri, LocalDateTime createTime) {
         this.appId = appId;
+        this.accessIp = accessIp;
         this.abilityUri = abilityUri;
         this.createTime = createTime;
     }

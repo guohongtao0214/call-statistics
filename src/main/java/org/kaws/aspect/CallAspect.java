@@ -88,11 +88,11 @@ public class CallAspect implements ApplicationContextAware {
                 if (StorageType.MYSQL.equals(storageType)) {
                     List<MySQLCallRecord> mySQLCallRecords =
                             (List<MySQLCallRecord>) applicationContext.getBean("mySQLCallRecords");
-                    mySQLCallRecords.add(new MySQLCallRecord(appid, url, LocalDateTime.now(ZoneId.of("Asia/Shanghai"))));
+                    mySQLCallRecords.add(new MySQLCallRecord(appid, ipAddr, url, LocalDateTime.now(ZoneId.of("Asia/Shanghai"))));
                 } else if (StorageType.MONGO.equals(storageType)) {
                     List<MongoCallRecord> mongoCallRecords =
                             (List<MongoCallRecord>) applicationContext.getBean("mongoCallRecords");
-                    mongoCallRecords.add(new MongoCallRecord(appid, url, LocalDateTime.now(ZoneId.of("Asia/Shanghai"))));
+                    mongoCallRecords.add(new MongoCallRecord(appid, ipAddr, url, LocalDateTime.now(ZoneId.of("Asia/Shanghai"))));
                 }
             } finally {
                 lock.unlock();
@@ -106,11 +106,11 @@ public class CallAspect implements ApplicationContextAware {
                 if (StorageType.MYSQL.equals(storageType)) {
                     List<MySQLCallSuccessRecord> mySQLCallSuccessRecords =
                             (List<MySQLCallSuccessRecord>) applicationContext.getBean("mySQLCallSuccessRecords");
-                    mySQLCallSuccessRecords.add(new MySQLCallSuccessRecord(appid, url, params, LocalDateTime.now(ZoneId.of("Asia/Shanghai"))));
+                    mySQLCallSuccessRecords.add(new MySQLCallSuccessRecord(appid, ipAddr, url, params, LocalDateTime.now(ZoneId.of("Asia/Shanghai"))));
                 } else if (StorageType.MONGO.equals(storageType)) {
                     List<MongoCallSuccessRecord> mongoCallSuccessRecords =
                             (List<MongoCallSuccessRecord>) applicationContext.getBean("mongoCallSuccessRecords");
-                    mongoCallSuccessRecords.add(new MongoCallSuccessRecord(appid, url, params, LocalDateTime.now(ZoneId.of("Asia/Shanghai"))));
+                    mongoCallSuccessRecords.add(new MongoCallSuccessRecord(appid, ipAddr, url, params, LocalDateTime.now(ZoneId.of("Asia/Shanghai"))));
                 }
             } finally {
                 lock.unlock();
