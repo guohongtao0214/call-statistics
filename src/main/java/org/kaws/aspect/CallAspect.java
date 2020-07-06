@@ -72,7 +72,8 @@ public class CallAspect implements ApplicationContextAware {
             if ("GET".equals(method)) {
                 Map<String, String[]> parameterMap = request.getParameterMap();
                 params = objectMapper.writeValueAsString(parameterMap);
-            } else {
+            }
+            if ("POST".equals(method)) {
                 int len = request.getContentLength();
                 ServletInputStream inputStream = request.getInputStream();
                 byte[] buffer = new byte[len];
