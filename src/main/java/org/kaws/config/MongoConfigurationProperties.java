@@ -7,7 +7,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 /**
  * @Author: Heiky
  * @Date: 2020/6/20 22:30
- * @Description:
+ * @Description: 设置mongodb的连接参数，默认值请参考 com.mongodb.MongoClientOptions
  */
 
 @Setter
@@ -19,8 +19,20 @@ public class MongoConfigurationProperties {
 
     private String uri;
 
-    private Integer minConnectionsPerHost = 5;
+    private int minPoolSize = 0;
 
-    private Integer maxConnectionsPerHost = 10;
+    private int maxPoolSize = 100;
+
+    private int connectTimeOut = 10000;
+
+    private int maxIdleTime = 0;
+
+    private int maxLifeTime = 0;
+
+    private int socketTimeout = 0;
+
+    private int waitQueueMultiple = 5;
+
+    private int waitQueueTimeout = 120000;
 
 }

@@ -2,8 +2,7 @@ package org.kaws.autoconfigure;
 
 
 import com.google.common.collect.Lists;
-import com.mongodb.MongoClientOptions;
-import com.mongodb.MongoClientURI;
+import lombok.extern.slf4j.Slf4j;
 import org.kaws.biz.MongoCallRecordBiz;
 import org.kaws.config.MongoConfiguration;
 import org.kaws.config.MongoConfigurationProperties;
@@ -20,7 +19,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.mongodb.MongoDbFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
+import org.springframework.data.mongodb.core.SimpleMongoClientDbFactory;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.PostConstruct;
@@ -36,6 +35,7 @@ import java.util.concurrent.locks.Lock;
  * @Description:
  */
 
+@Slf4j
 @Configuration
 @EnableConfigurationProperties(MongoConfigurationProperties.class)
 @ConditionalOnProperty(prefix = "call.statistics.mongo", name = "active", havingValue = "true")
@@ -56,12 +56,23 @@ public class MongoCallStatisticsAutoConfiguration implements ApplicationContextA
     @Bean
     public MongoDbFactory mongoDbFactory(MongoConfigurationProperties mongoConfigurationProperties) {
         //客户端配置（连接数）
-        MongoClientOptions.Builder builder = new MongoClientOptions.Builder();
-        builder.connectionsPerHost(mongoConfigurationProperties.getMaxConnectionsPerHost());
-        builder.minConnectionsPerHost(mongoConfigurationProperties.getMinConnectionsPerHost());
+        // MongoClientOptions.Builder builder = new MongoClientOptions.Builder();
+        // builder.connectionsPerHost(mongoConfigurationProperties.getMaxConnectionPoolSize());
+        // builder.minConnectionsPerHost(mongoConfigurationProperties.getMinConnectionPoolSize());
         MongoDbFactory mongoDbFactory = null;
         if (mongoConfigurationProperties.getUri() != null) {
-            mongoDbFactory = new SimpleMongoDbFactory(new MongoClientURI(mongoConfigurationProperties.getUri(), builder));
+            //mongoDbFactory = new SimpleMongoDbFactory(new MongoClientURI(mongoConfigurationProperties.getUri(), builder));
+            String mongoURI = new StringBuilder(mongoConfigurationProperties.getUri())
+                    .append("?").append("maxpoolsize=").append(mongoConfigurationProperties.getMaxPoolSize())
+                    .append("&").append("minpoolsize=").append(mongoConfigurationProperties.getMinPoolSize())
+                    .append("&").append("waitqueuemultiple=").append(mongoConfigurationProperties.getWaitQueueMultiple())
+                    .append("&").append("waitqueuetimeoutms=").append(mongoConfigurationProperties.getWaitQueueTimeout())
+                    .append("&").append("connecttimeoutms=").append(mongoConfigurationProperties.getConnectTimeOut())
+                    .append("&").append("maxidletimems=").append(mongoConfigurationProperties.getMaxIdleTime())
+                    .append("&").append("maxlifetimems=").append(mongoConfigurationProperties.getMaxLifeTime())
+                    .append("&").append("sockettimeoutms=").append(mongoConfigurationProperties.getSocketTimeout())
+                    .toString();
+            mongoDbFactory = new SimpleMongoClientDbFactory(mongoURI);
         }
         return mongoDbFactory;
     }
@@ -110,8 +121,10 @@ public class MongoCallStatisticsAutoConfiguration implements ApplicationContextA
                 } finally {
                     lock.unlock();
                 }
-
                 mongoCallRecordBiz.saveCallRecords(savingCallRecords);
+                if (log.isDebugEnabled()) {
+                    log.debug("Mongo Has Saved CallRecords:{} Successfully", savingCallRecords.size());
+                }
             }
             if (!CollectionUtils.isEmpty(mongoCallSuccessRecords)) {
                 MongoCallRecordBiz mongoCallRecordBiz = applicationContext.getBean(MongoCallRecordBiz.class);
@@ -123,8 +136,10 @@ public class MongoCallStatisticsAutoConfiguration implements ApplicationContextA
                 } finally {
                     lock.unlock();
                 }
-
                 mongoCallRecordBiz.saveCallSuccessRecords(savingCallRecords);
+                if (log.isDebugEnabled()) {
+                    log.debug("Mongo Has Saved CallSuccessRecords:{} Successfully", savingCallRecords.size());
+                }
             }
         }, 60, 10, TimeUnit.SECONDS);
 
