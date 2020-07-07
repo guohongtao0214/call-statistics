@@ -1,6 +1,7 @@
 package org.kaws.autoconfigure;
 
 import com.google.common.collect.Lists;
+import lombok.extern.slf4j.Slf4j;
 import org.kaws.biz.MySQLCallRecordBiz;
 import org.kaws.config.JPAConfiguration;
 import org.kaws.config.MySQLConfigurationProperties;
@@ -32,6 +33,8 @@ import java.util.concurrent.locks.Lock;
  * @Description:
  */
 
+
+@Slf4j
 @Configuration
 @EnableConfigurationProperties(MySQLConfigurationProperties.class)
 @ConditionalOnProperty(prefix = "call.statistics.mysql", name = "active", havingValue = "true")
@@ -89,8 +92,10 @@ public class MySQLCallStatisticsAutoConfiguration implements ApplicationContextA
                 } finally {
                     lock.unlock();
                 }
-
                 mySQLCallRecordBiz.saveCallRecords(savingCallRecords);
+                if (log.isDebugEnabled()) {
+                    log.debug("MySQL Has Saved CallRecords:{} Successfully", savingCallRecords.size());
+                }
             }
             if (!CollectionUtils.isEmpty(mySQLCallSuccessRecords)) {
                 MySQLCallRecordBiz mySQLCallRecordBiz = applicationContext.getBean(MySQLCallRecordBiz.class);
@@ -102,8 +107,10 @@ public class MySQLCallStatisticsAutoConfiguration implements ApplicationContextA
                 } finally {
                     lock.unlock();
                 }
-
                 mySQLCallRecordBiz.saveCallSuccessRecords(savingCallRecords);
+                if (log.isDebugEnabled()) {
+                    log.debug("MySQL Has Saved CallSuccessRecords:{} Successfully", savingCallRecords.size());
+                }
             }
         }, 60, 10, TimeUnit.SECONDS);
 
