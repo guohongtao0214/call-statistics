@@ -84,17 +84,48 @@ public class DataSourceConf {
 4.基于MongoDB的配置方式
 ```
 call.statistics.mongo.active=true
-call.statistics.mongo.uri= mongodb://username:password@localhost:27017/database
+call.statistics.mongo.uri=mongodb://username:password@localhost:27017/database
+# 以下条件为非必填项，存在默认值
+call.statistics.mongo.minPoolSize=0
+
+call.statistics.mongo.maxPoolSize=100
+
+# The connection timeout in milliseconds
+call.statistics.mongo.connectTimeOut=1000
+
+# The maximum idle time of a pooled connection
+call.statistics.mongo.maxIdleTime=0
+
+# he maximum life time of a pooled connection
+call.statistics.mongo.maxLifeTime=0
+
+# The socket timeout in milliseconds
+call.statistics.mongo.socketTimeout=0
+
+# This multiplier, multiplied with the connectionsPerHost setting, gives the maximum number of threads that may be waiting for a connection to become available from the pool
+call.statistics.mongo.waitQueueMultiple=5
+
+# The maximum wait time in milliseconds that a thread may wait for a connection to become available
+call.statistics.mongo.waitQueueTimeout=120000
 
 ```
-没有开启认证的话，可以去除username和password  
+没有开启认证的话，可以去除username和password 
 
-5.开启统计功能
+5.异步刷库
+为了减少对主业务的影响，调用统计记录的入库改为异步批量入库，默认10s刷新一次。  
+在AOP的环绕消息里面，先把调用记录存到list，然后通过ScheduleThreadPoolExecutor固定频率获取list里面的数据，刷新到配置好的数据源。
+```
+# 可以设置ScheduleThreadPoolExecutor的核心线程数量，默认服务器的核心线程数
+call.statistics.scheduled.corePoolSize=
+
+```
+
+6.开启统计功能
 根据选取的储存方式的不同，选择不同的注解  
 @CallStatistics(value = StorageType.MYSQL)和@CallStatistics(value = StorageType.MONGO)，一般在controller的方法上面。  
 使用MySQL的方式，需要初始化数据库，call.sql工程中已经提供。 
 
-6.自定义统计字段
+7.自定义统计字段
 请求头中里面加入了自定义appID字段，如果想要统计不同的字段可以自行添加，源码(CallAspect)如下：
 ```
 try {
