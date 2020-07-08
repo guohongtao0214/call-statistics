@@ -57,13 +57,13 @@ call.statistics.mysql.pool-name=DataSourceHikariCP
 call.statistics.mysql.max-lifetime=1800000
 call.statistics.mysql.connection-test-query=SELECT 1
 ```
-在配置的时候出现了一系列问题，主要是多数据源的问题，笔者演示的的JDBCTempalte的注入方式，MyBatis的方式类似，往SqlSessionFactory注入
-相应的数据源即可，必须设置@Primary数据库（如果用到了数据库）。
+在配置的时候出现了一系列问题，主要是多数据源的问题，笔者演示MyBatis和JdbcTempalte的配置方式。  
+3.1 JdbcTemplate的配置方式
 ```
 @Configuration
 public class DataSourceConf {
 
-       /**
+        /**
          * 因为统计包中已经有数据源了所以需要配置@Primary
          *
          * @return
@@ -99,6 +99,30 @@ public class DataSourceConf {
         }
 }
 ```
+3.2 MyBatis的配置方式，只需要配置主数据源即可， mybatis-spring-boot-starter会自动加载SqlSessionFactoryBean和MapperScannerConfigurer
+```
+@Configuration
+public class DataSourceConf {
+
+        /**
+         * 因为统计包中已经有数据源了所以需要配置@Primary
+         *
+         * @return mainDataSource
+         */
+        @Primary
+        @Bean
+        /**
+         * springboot的多数据源自动装配的时候配置文件中的url需要改成url-jdbc，参考application-dev.yml
+         * 如果不修改进行数据库访问时会报错：jdbcUrl is required with driverClassName.
+         */
+        @ConfigurationProperties(prefix = "spring.datasource")
+        @Qualifier("mainDataSource")
+        public DataSource mainDataSource() {
+            return DataSourceBuilder.create().build();
+        }
+}
+```
+
 4.基于MongoDB的配置方式
 ```
 call.statistics.mongo.active=true
