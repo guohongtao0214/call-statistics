@@ -5,21 +5,39 @@
 - MySQL(默认方式)
 - MongoDB  
 
+
+## Project Basic Facts
 MySQL的持久化方式用的Spring Data JPA，MongoDB的持久化方式用的MongoTemplate。  
-使用了ScheduledThreadPoolExecutor固定周期的刷新List(采用异步添加的方式，先把记录数添加到list)，每隔一段时间刷新到MySQL或者MongoDB。
+使用了ScheduledThreadPoolExecutor固定周期的刷新List(采用异步添加的方式，先把记录数添加到list)，每隔一段时间刷新到MySQL或者MongoDB。  
+目前常用的持久层框架，主要是Spring Data JPA，MyBatis等，以MyBatis为主。为了减少对主项目的jar包依赖的影响，首次开发基于Spring Data JPA，  
+已经满足了项目的正常需求。为了使用该Stater的适用性更广泛，减少对持久层框架的影响，基于JdbcTemplate，又开发了一套新的starter。  
+call-statistics:
+- call-statistics-jdbc
+- call-statistics-jpa  
+
+以上两个子工程均支持MongoDB，区别仅在于MySQL持久化。  
+如果业务代码使用的持久层框架是Spring Data JPA或者MyBatis，请选择call-statistics-jdbc；  
+如果业务代码使用的持久层框架是JdbcTemplate，请选择call-statistics-jpa。
 
 
 ## Quick Start
 
 1.首先使用 mvn clean install -Dmaven.test.skip=true 将本工程安装到本地maven仓库
 
-2.在你的web项目中，引入pom依赖
+2.在你的web项目中，引入pom依赖，选择其一
 ```
 <dependency>
     <groupId>org.kaws</groupId>
-    <artifactId>call-statistics-spring-boot-starter</artifactId>
+    <artifactId>call-statistics-jdbc</artifactId>
     <version>1.0.0</version>
 </dependency>
+
+<dependency>
+    <groupId>org.kaws</groupId>
+    <artifactId>call-statistics-jpa</artifactId>
+    <version>1.0.0</version>
+</dependency>
+
 ```
 
 3.基于MySQL的配置方式
@@ -44,9 +62,9 @@ call.statistics.mysql.connection-test-query=SELECT 1
 ```
 @Configuration
 public class DataSourceConf {
+
        /**
          * 因为统计包中已经有数据源了所以需要配置@Primary
-         * 如果不配置@Primary启动就会报错：orm.jpa.HibernateProperties' that could not be found.
          *
          * @return
          */
@@ -121,10 +139,21 @@ call.statistics.scheduled.corePoolSize=
 ```
 
 6.开启统计功能
-根据选取的储存方式的不同，选择不同的注解  
-@CallStatistics(value = StorageType.MYSQL)和@CallStatistics(value = StorageType.MONGO)，一般在controller的方法上面。  
-使用MySQL的方式，需要初始化数据库，call.sql工程中已经提供。 
-
+使用MySQL的方式，需要初始化数据库，请看call.sql
+首先在启动类上排除mongo的自动配置
+```
+@SpringBootApplication(exclude = {MongoAutoConfiguration.class, MongoDataAutoConfiguration.class})
+```
+其次在controller的方法上开启注解@CallStatistics和@CallStatistics(value = StorageType.MONGO)，如下：
+```
+  //@CallStatistics(StorageType.MONGO)
+    @CallStatistics
+    @GetMapping("/one")
+    public RestResponse getEnterpriseInfoById(int id) {
+        EnterpriseInfo enterpriseInfo = enterpriseInfoService.getById(id);
+        return RestResponse.success(enterpriseInfo);
+    }
+```
 7.自定义统计字段
 请求头中里面加入了自定义appID字段，如果想要统计不同的字段可以自行添加，源码(CallAspect)如下：
 ```
