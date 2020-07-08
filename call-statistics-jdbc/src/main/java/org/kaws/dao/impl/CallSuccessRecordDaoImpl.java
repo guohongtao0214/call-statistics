@@ -1,5 +1,6 @@
 package org.kaws.dao.impl;
 
+import lombok.extern.slf4j.Slf4j;
 import org.kaws.dao.CallSuccessRecordDao;
 import org.kaws.entity.MySQLCallSuccessRecord;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import java.util.List;
  * @Description:
  */
 
+@Slf4j
 @Repository
 @ConditionalOnProperty(prefix = "call.statistics.mysql", name = "active", havingValue = "true")
 public class CallSuccessRecordDaoImpl implements CallSuccessRecordDao {
@@ -31,6 +33,9 @@ public class CallSuccessRecordDaoImpl implements CallSuccessRecordDao {
     @Override
     public Integer saveCallSuccessRecords(List<MySQLCallSuccessRecord> mySQLCallSuccessRecords) {
         String sql = "insert into call_success_record(app_id,access_ip,ability_uri,params,create_time) values(?,?,?,?,?)";
+        if (log.isDebugEnabled()) {
+            log.debug("Preparing: {}", sql);
+        }
         int[] rows = jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
             @Override
             public void setValues(PreparedStatement ps, int i) throws SQLException {
@@ -39,6 +44,11 @@ public class CallSuccessRecordDaoImpl implements CallSuccessRecordDao {
                 ps.setString(3, mySQLCallSuccessRecords.get(i).getAbilityUri());
                 ps.setString(4, mySQLCallSuccessRecords.get(i).getParams());
                 ps.setObject(5, mySQLCallSuccessRecords.get(i).getCreateTime());
+                if (log.isDebugEnabled()) {
+                    log.debug("Parameters: {}, {}, {}, {}, {}", mySQLCallSuccessRecords.get(i).getAppId(),
+                            mySQLCallSuccessRecords.get(i).getAccessIp(), mySQLCallSuccessRecords.get(i).getParams(),
+                            mySQLCallSuccessRecords.get(i).getAbilityUri(), mySQLCallSuccessRecords.get(i).getCreateTime());
+                }
             }
 
             @Override
@@ -46,6 +56,9 @@ public class CallSuccessRecordDaoImpl implements CallSuccessRecordDao {
                 return mySQLCallSuccessRecords.size();
             }
         });
+        if (log.isDebugEnabled()) {
+            log.debug("Total: {}", rows.length);
+        }
         return rows.length;
     }
 

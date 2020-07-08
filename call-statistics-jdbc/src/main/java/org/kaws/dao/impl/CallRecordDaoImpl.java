@@ -1,5 +1,6 @@
 package org.kaws.dao.impl;
 
+import lombok.extern.slf4j.Slf4j;
 import org.kaws.dao.CallRecordDao;
 import org.kaws.entity.MySQLCallRecord;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import java.util.List;
  * @Description:
  */
 
+@Slf4j
 @Repository
 @ConditionalOnProperty(prefix = "call.statistics.mysql", name = "active", havingValue = "true")
 public class CallRecordDaoImpl implements CallRecordDao {
@@ -30,6 +32,9 @@ public class CallRecordDaoImpl implements CallRecordDao {
     @Override
     public Integer saveCallRecords(List<MySQLCallRecord> mySQLCallRecords) {
         String sql = "insert into call_record(app_id,access_ip,ability_uri,create_time) values(?,?,?,?)";
+        if (log.isDebugEnabled()) {
+            log.debug("Preparing: {}", sql);
+        }
         int[] rows = jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
             @Override
             public void setValues(PreparedStatement ps, int i) throws SQLException {
@@ -37,6 +42,10 @@ public class CallRecordDaoImpl implements CallRecordDao {
                 ps.setString(2, mySQLCallRecords.get(i).getAccessIp());
                 ps.setString(3, mySQLCallRecords.get(i).getAbilityUri());
                 ps.setObject(4, mySQLCallRecords.get(i).getCreateTime());
+                if (log.isDebugEnabled()) {
+                    log.debug("Parameters: {}, {}, {}, {}", mySQLCallRecords.get(i).getAppId(), mySQLCallRecords.get(i).getAccessIp(),
+                            mySQLCallRecords.get(i).getAbilityUri(), mySQLCallRecords.get(i).getCreateTime());
+                }
             }
 
             @Override
@@ -44,6 +53,9 @@ public class CallRecordDaoImpl implements CallRecordDao {
                 return mySQLCallRecords.size();
             }
         });
+        if (log.isDebugEnabled()) {
+            log.debug("Total: {}", rows.length);
+        }
         return rows.length;
     }
 
