@@ -1,4 +1,7 @@
-/call-statistics.iml
-/.idea/
-/target/
-/src/test/
+.classpath
+.project
+.settings/
+target/
+*.log*
+*.iml
+.idea/
