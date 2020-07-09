@@ -58,6 +58,7 @@ call.statistics.mysql.max-lifetime=1800000
 call.statistics.mysql.connection-test-query=SELECT 1
 ```
 在配置的时候出现了一系列问题，主要是多数据源的问题，笔者演示MyBatis和JdbcTempalte的配置方式。  
+数据库连接池以HikariCP为例  
 3.1 JdbcTemplate的配置方式
 ```
 @Configuration
@@ -71,7 +72,7 @@ public class DataSourceConf {
         @Primary
         @Bean
         /**
-         * springboot的多数据源自动装配的时候配置文件中的url需要改成url-jdbc，参考application-dev.yml
+         * springboot的多数据源自动装配的时候配置文件中的url需要改成url-jdbc
          * 如果不修改进行数据库访问时会报错：jdbcUrl is required with driverClassName.
          */
         @ConfigurationProperties(prefix = "spring.datasource")
@@ -112,7 +113,7 @@ public class DataSourceConf {
         @Primary
         @Bean
         /**
-         * springboot的多数据源自动装配的时候配置文件中的url需要改成url-jdbc，参考application-dev.yml
+         * springboot的多数据源自动装配的时候配置文件中的url需要改成url-jdbc
          * 如果不修改进行数据库访问时会报错：jdbcUrl is required with driverClassName.
          */
         @ConfigurationProperties(prefix = "spring.datasource")
