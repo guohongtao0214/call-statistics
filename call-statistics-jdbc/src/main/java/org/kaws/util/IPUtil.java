@@ -42,7 +42,7 @@ public class IPUtil {
                 }
             }
         } catch (Exception e) {
-            ipAddress="";
+            ipAddress = "";
         }
         return ipAddress;
     }
