@@ -99,7 +99,7 @@ public class CallAspect implements ApplicationContextAware {
                 lock.unlock();
             }
 
-            // 调用真正的接口
+            // 调用真正的controller
             res = joinPoint.proceed();
             // 将用户标识、请求方式 请求地址、请求参数、请求时间存入调用成功记录的集合
             lock.lock();
