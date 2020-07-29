@@ -158,7 +158,7 @@ call.statistics.mongo.waitQueueTimeout=120000
 为了减少对主业务的影响，调用统计记录的入库改为异步批量入库，默认10s刷新一次。  
 在AOP的环绕消息里面，先把调用记录存到list，然后通过ScheduleThreadPoolExecutor固定频率获取list里面的数据，刷新到配置好的数据源。
 ```
-# 可以设置ScheduleThreadPoolExecutor的核心线程数量，默认服务器的核心线程数
+# 可以设置ScheduleThreadPoolExecutor的核心线程数量，默认为1，设置为守护线程，不建议修改
 call.statistics.scheduled.corePoolSize=
 
 ```
