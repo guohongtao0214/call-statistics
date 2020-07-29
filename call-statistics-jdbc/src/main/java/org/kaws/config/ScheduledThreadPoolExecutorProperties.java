@@ -15,6 +15,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "call.statistics.scheduled")
 public class ScheduledThreadPoolExecutorProperties {
 
-    private int corePoolSize = Runtime.getRuntime().availableProcessors();
+    /**
+     * 默认1，设置守护线程
+     */
+    private int corePoolSize = 1;
 
 }
