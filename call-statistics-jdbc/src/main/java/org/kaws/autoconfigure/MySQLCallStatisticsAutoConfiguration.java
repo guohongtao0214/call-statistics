@@ -73,7 +73,7 @@ public class MySQLCallStatisticsAutoConfiguration implements ApplicationContextA
 
 
     @PostConstruct
-    public void scheduleWithFixedRate() {
+    public void scheduled() {
         List<MySQLCallRecord> mySQLCallRecords =
                 (List<MySQLCallRecord>) applicationContext.getBean("mySQLCallRecords");
         List<MySQLCallSuccessRecord> mySQLCallSuccessRecords =

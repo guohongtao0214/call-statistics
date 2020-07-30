@@ -101,7 +101,7 @@ public class MongoCallStatisticsAutoConfiguration implements ApplicationContextA
 
 
     @PostConstruct
-    public void scheduleWithFixedRate() {
+    public void scheduled() {
         List<MongoCallRecord> mongoCallRecords =
                 (List<MongoCallRecord>) applicationContext.getBean("mongoCallRecords");
         List<MongoCallSuccessRecord> mongoCallSuccessRecords =
