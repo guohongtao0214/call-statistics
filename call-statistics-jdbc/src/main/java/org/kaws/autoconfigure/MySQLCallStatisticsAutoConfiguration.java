@@ -81,7 +81,7 @@ public class MySQLCallStatisticsAutoConfiguration implements ApplicationContextA
 
         ScheduledThreadPoolExecutor scheduledThreadPoolExecutor = (ScheduledThreadPoolExecutor) applicationContext.getBean("customScheduledThreadPool");
 
-        scheduledThreadPoolExecutor.scheduleAtFixedRate(() -> {
+        scheduledThreadPoolExecutor.scheduleWithFixedDelay(() -> {
             if (!CollectionUtils.isEmpty(mySQLCallRecords)) {
                 MySQLCallRecordBiz mySQLCallRecordBiz = applicationContext.getBean(MySQLCallRecordBiz.class);
                 ArrayList<MySQLCallRecord> savingCallRecords;

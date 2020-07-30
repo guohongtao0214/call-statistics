@@ -109,7 +109,7 @@ public class MongoCallStatisticsAutoConfiguration implements ApplicationContextA
 
         ScheduledThreadPoolExecutor scheduledThreadPoolExecutor = (ScheduledThreadPoolExecutor) applicationContext.getBean("customScheduledThreadPool");
 
-        scheduledThreadPoolExecutor.scheduleAtFixedRate(() -> {
+        scheduledThreadPoolExecutor.scheduleWithFixedDelay(() -> {
             if (!CollectionUtils.isEmpty(mongoCallRecords)) {
                 MongoCallRecordBiz mongoCallRecordBiz = applicationContext.getBean(MongoCallRecordBiz.class);
 
