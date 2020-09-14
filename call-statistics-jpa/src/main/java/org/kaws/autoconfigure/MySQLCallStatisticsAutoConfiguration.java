@@ -61,6 +61,9 @@ public class MySQLCallStatisticsAutoConfiguration implements ApplicationContextA
     }
 
 
+	/**
+	 * 缓存调用记录，用于异步刷库
+	 */
     @Bean
     public List<MySQLCallRecord> mySQLCallRecords() {
         return new ArrayList<>();
