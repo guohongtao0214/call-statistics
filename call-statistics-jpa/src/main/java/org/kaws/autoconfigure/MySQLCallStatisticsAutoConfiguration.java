@@ -61,9 +61,9 @@ public class MySQLCallStatisticsAutoConfiguration implements ApplicationContextA
     }
 
 
-	/**
-	 * 缓存调用记录，用于异步刷库
-	 */
+    /**
+     * 缓存调用记录，用于异步刷库
+     */
     @Bean
     public List<MySQLCallRecord> mySQLCallRecords() {
         return new ArrayList<>();
@@ -92,12 +92,15 @@ public class MySQLCallStatisticsAutoConfiguration implements ApplicationContextA
                 try {
                     savingCallRecords = Lists.newArrayList(mySQLCallRecords);
                     mySQLCallRecords.clear();
+                    mySQLCallRecordBiz.saveCallRecords(savingCallRecords);
+                    if (log.isDebugEnabled()) {
+                        log.debug("MySQL Has Saved CallRecords:{} Successfully", savingCallRecords.size());
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    log.error("Mongo save failed ");
                 } finally {
                     lock.unlock();
-                }
-                mySQLCallRecordBiz.saveCallRecords(savingCallRecords);
-                if (log.isDebugEnabled()) {
-                    log.debug("MySQL Has Saved CallRecords:{} Successfully", savingCallRecords.size());
                 }
             }
             if (!CollectionUtils.isEmpty(mySQLCallSuccessRecords)) {
@@ -107,12 +110,15 @@ public class MySQLCallStatisticsAutoConfiguration implements ApplicationContextA
                 try {
                     savingCallRecords = Lists.newArrayList(mySQLCallSuccessRecords);
                     mySQLCallSuccessRecords.clear();
+                    mySQLCallRecordBiz.saveCallSuccessRecords(savingCallRecords);
+                    if (log.isDebugEnabled()) {
+                        log.debug("MySQL Has Saved CallSuccessRecords:{} Successfully", savingCallRecords.size());
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    log.error("Mongo save failed ");
                 } finally {
                     lock.unlock();
-                }
-                mySQLCallRecordBiz.saveCallSuccessRecords(savingCallRecords);
-                if (log.isDebugEnabled()) {
-                    log.debug("MySQL Has Saved CallSuccessRecords:{} Successfully", savingCallRecords.size());
                 }
             }
         }, 60, 10, TimeUnit.SECONDS);

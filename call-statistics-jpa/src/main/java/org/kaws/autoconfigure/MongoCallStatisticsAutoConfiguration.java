@@ -118,12 +118,15 @@ public class MongoCallStatisticsAutoConfiguration implements ApplicationContextA
                 try {
                     savingCallRecords = Lists.newArrayList(mongoCallRecords);
                     mongoCallRecords.clear();
+                    mongoCallRecordBiz.saveCallRecords(savingCallRecords);
+                    if (log.isDebugEnabled()) {
+                        log.debug("Mongo Has Saved CallRecords:{} Successfully", savingCallRecords.size());
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    log.error("Mongo save failed ");
                 } finally {
                     lock.unlock();
-                }
-                mongoCallRecordBiz.saveCallRecords(savingCallRecords);
-                if (log.isDebugEnabled()) {
-                    log.debug("Mongo Has Saved CallRecords:{} Successfully", savingCallRecords.size());
                 }
             }
             if (!CollectionUtils.isEmpty(mongoCallSuccessRecords)) {
@@ -133,12 +136,15 @@ public class MongoCallStatisticsAutoConfiguration implements ApplicationContextA
                 try {
                     savingCallRecords = Lists.newArrayList(mongoCallSuccessRecords);
                     mongoCallSuccessRecords.clear();
+                    mongoCallRecordBiz.saveCallSuccessRecords(savingCallRecords);
+                    if (log.isDebugEnabled()) {
+                        log.debug("Mongo Has Saved CallSuccessRecords:{} Successfully", savingCallRecords.size());
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    log.error("Mongo save failed ");
                 } finally {
                     lock.unlock();
-                }
-                mongoCallRecordBiz.saveCallSuccessRecords(savingCallRecords);
-                if (log.isDebugEnabled()) {
-                    log.debug("Mongo Has Saved CallSuccessRecords:{} Successfully", savingCallRecords.size());
                 }
             }
         }, 60, 10, TimeUnit.SECONDS);
