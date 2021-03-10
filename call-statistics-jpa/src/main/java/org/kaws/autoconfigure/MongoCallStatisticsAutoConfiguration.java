@@ -111,11 +111,10 @@ public class MongoCallStatisticsAutoConfiguration implements ApplicationContextA
 
         scheduledThreadPoolExecutor.scheduleAtFixedRate(() -> {
             if (!CollectionUtils.isEmpty(mongoCallRecords)) {
-                MongoCallRecordBiz mongoCallRecordBiz = applicationContext.getBean(MongoCallRecordBiz.class);
-
-                ArrayList<MongoCallRecord> savingCallRecords;
-                lock.lock();
                 try {
+                    MongoCallRecordBiz mongoCallRecordBiz = applicationContext.getBean(MongoCallRecordBiz.class);
+                    ArrayList<MongoCallRecord> savingCallRecords;
+                    lock.lock();
                     savingCallRecords = Lists.newArrayList(mongoCallRecords);
                     mongoCallRecords.clear();
                     mongoCallRecordBiz.saveCallRecords(savingCallRecords);
@@ -123,17 +122,16 @@ public class MongoCallStatisticsAutoConfiguration implements ApplicationContextA
                         log.debug("Mongo Has Saved CallRecords:{} Successfully", savingCallRecords.size());
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
-                    log.error("Mongo save failed ");
+                    log.error("Mongo save failed：{} ", e.getMessage());
                 } finally {
                     lock.unlock();
                 }
             }
             if (!CollectionUtils.isEmpty(mongoCallSuccessRecords)) {
-                MongoCallRecordBiz mongoCallRecordBiz = applicationContext.getBean(MongoCallRecordBiz.class);
-                ArrayList<MongoCallSuccessRecord> savingCallRecords;
-                lock.lock();
                 try {
+                    MongoCallRecordBiz mongoCallRecordBiz = applicationContext.getBean(MongoCallRecordBiz.class);
+                    ArrayList<MongoCallSuccessRecord> savingCallRecords;
+                    lock.lock();
                     savingCallRecords = Lists.newArrayList(mongoCallSuccessRecords);
                     mongoCallSuccessRecords.clear();
                     mongoCallRecordBiz.saveCallSuccessRecords(savingCallRecords);
@@ -141,8 +139,7 @@ public class MongoCallStatisticsAutoConfiguration implements ApplicationContextA
                         log.debug("Mongo Has Saved CallSuccessRecords:{} Successfully", savingCallRecords.size());
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
-                    log.error("Mongo save failed ");
+                    log.error("Mongo save failed：{} ", e.getMessage());
                 } finally {
                     lock.unlock();
                 }
