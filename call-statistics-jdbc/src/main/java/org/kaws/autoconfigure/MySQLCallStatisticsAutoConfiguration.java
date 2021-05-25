@@ -83,33 +83,37 @@ public class MySQLCallStatisticsAutoConfiguration implements ApplicationContextA
 
         scheduledThreadPoolExecutor.scheduleWithFixedDelay(() -> {
             if (!CollectionUtils.isEmpty(mySQLCallRecords)) {
-                MySQLCallRecordBiz mySQLCallRecordBiz = applicationContext.getBean(MySQLCallRecordBiz.class);
-                ArrayList<MySQLCallRecord> savingCallRecords;
-                lock.lock();
                 try {
+                    MySQLCallRecordBiz mySQLCallRecordBiz = applicationContext.getBean(MySQLCallRecordBiz.class);
+                    ArrayList<MySQLCallRecord> savingCallRecords;
+                    lock.lock();
                     savingCallRecords = Lists.newArrayList(mySQLCallRecords);
                     mySQLCallRecords.clear();
+                    mySQLCallRecordBiz.saveCallRecords(savingCallRecords);
+                    if (log.isDebugEnabled()) {
+                        log.debug("MySQL Has Saved CallRecords:{} Successfully", savingCallRecords.size());
+                    }
+                } catch (Exception e) {
+                    log.error("Mongo save failed：{} ", e.getMessage());
                 } finally {
                     lock.unlock();
-                }
-                mySQLCallRecordBiz.saveCallRecords(savingCallRecords);
-                if (log.isDebugEnabled()) {
-                    log.debug("MySQL Has Saved CallRecords:{} Successfully", savingCallRecords.size());
                 }
             }
             if (!CollectionUtils.isEmpty(mySQLCallSuccessRecords)) {
-                MySQLCallRecordBiz mySQLCallRecordBiz = applicationContext.getBean(MySQLCallRecordBiz.class);
-                ArrayList<MySQLCallSuccessRecord> savingCallRecords;
-                lock.lock();
                 try {
+                    MySQLCallRecordBiz mySQLCallRecordBiz = applicationContext.getBean(MySQLCallRecordBiz.class);
+                    ArrayList<MySQLCallSuccessRecord> savingCallRecords;
+                    lock.lock();
                     savingCallRecords = Lists.newArrayList(mySQLCallSuccessRecords);
                     mySQLCallSuccessRecords.clear();
+                    mySQLCallRecordBiz.saveCallSuccessRecords(savingCallRecords);
+                    if (log.isDebugEnabled()) {
+                        log.debug("MySQL Has Saved CallSuccessRecords:{} Successfully", savingCallRecords.size());
+                    }
+                } catch (Exception e) {
+                    log.error("Mongo save failed：{} ", e.getMessage());
                 } finally {
                     lock.unlock();
-                }
-                mySQLCallRecordBiz.saveCallSuccessRecords(savingCallRecords);
-                if (log.isDebugEnabled()) {
-                    log.debug("MySQL Has Saved CallSuccessRecords:{} Successfully", savingCallRecords.size());
                 }
             }
         }, 60, 10, TimeUnit.SECONDS);
